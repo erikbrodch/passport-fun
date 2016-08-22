@@ -13,11 +13,17 @@ app.use(expressSession({ secret: 'mySecretKey' }));
 
 
 app.use(passport.initialize());
+app.use(passport.session());
 
 passport.serializeUser(function (user, done) {
   console.log(user);
   done(null, user);
 });
+
+passport.deserializeUser(function (user, done) {
+  done(null, user);
+});
+
 
 var expressSession = require('express-session');
 app.use(expressSession({secret: 'mySecretKey'}));
@@ -39,12 +45,21 @@ passport.use('login', new LocalStrategy(function (username, password, done) {
 /*  session: false*/ //we enable session so I uncommented
 }));
 
-  app.get('/success', function (req, res){
-  res.send("Hey, hello from the server!");
-})
-
+app.get('/success', function (req, res){
+  if (!req.isAuthenticated()) {// Denied. Redirect to login
+    console.log('DEEEnied')
+    res.redirect('/login');
+  } else {
+    res.send('Hey, hello from the server!');
+  }
+});
 app.get('/login', function (req, res) {
   res.sendFile(__dirname + '/login.html');
+});
+
+app.get('/logout', function (req, res) {
+  req.logout();
+  res.send('Logged out!');
 });
 
 app.listen(4000);
