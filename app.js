@@ -18,4 +18,21 @@ passport.use('login', new LocalStrategy(function (username, password, done) {
   } else {
     return done(null, false);       
   }
+
 }));
+
+  app.post('/login', passport.authenticate('login', {
+  successRedirect: '/success',
+  failureRedirect: '/login',
+  session: false
+}));
+
+  app.get('/success', function (req, res){
+  res.send("Hey, hello from the server!");
+})
+
+app.get('/login', function (req, res) {
+  res.sendFile(__dirname + '/login.html');
+});
+
+app.listen(4000);
